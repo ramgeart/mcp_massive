@@ -14,7 +14,7 @@
 
 # Massive.com MCP Server
 
- [![GitHub release](https://img.shields.io/github/v/release/massive-com/mcp_massive)](https://github.com/massive-com/mcp_massive/releases)
+ [![GitHub release](https://img.shields.io/github/v/release/ramgeart/mcp_massive)](https://github.com/ramgeart/mcp_massive/releases)
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides access to [Massive.com](https://massive.com?utm_campaign=mcp&utm_medium=referral&utm_source=github) financial market data API through an LLM-friendly interface.
 
@@ -39,6 +39,89 @@ This server exposes all Massive.com API endpoints as MCP tools, providing access
 - [Astral UV](https://docs.astral.sh/uv/getting-started/installation/)
   - For existing installs, check that you have a version that supports the `uvx` command.
 
+This MCP server is compatible with any MCP client that follows the [Model Context Protocol specification](https://modelcontextprotocol.io/). Below are specific instructions for popular IDEs and clients.
+
+### VS Code
+
+For VS Code, you can use the [MCP extension](https://marketplace.visualstudio.com/items?itemName=ModelContextProtocol.vscode-mcp) or configure it through your user settings.
+
+1. Install the MCP extension from the VS Code marketplace
+2. Add the following to your VS Code settings (`.vscode/settings.json` or user settings):
+
+```json
+{
+  "mcp.servers": {
+    "massive": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/ramgeart/mcp_massive",
+        "mcp_massive"
+      ],
+      "env": {
+        "MASSIVE_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Cursor has built-in support for MCP servers. To configure:
+
+1. Open Cursor Settings (Cmd/Ctrl + ,)
+2. Navigate to Features → MCP
+3. Click "Add MCP Server" or edit the configuration file directly
+
+Add this configuration to your Cursor MCP settings file (typically at `~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "massive": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/ramgeart/mcp_massive",
+        "mcp_massive"
+      ],
+      "env": {
+        "MASSIVE_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+### Windsurf
+
+Windsurf IDE supports MCP servers through its configuration system:
+
+1. Open Windsurf settings
+2. Navigate to the MCP configuration section
+3. Add the Massive MCP server with the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "massive": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/ramgeart/mcp_massive",
+        "mcp_massive"
+      ],
+      "env": {
+        "MASSIVE_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+> **Note**: If `uvx` is not in your PATH, use the full path to the uvx executable. Find it by running `which uvx` (Mac/Linux) or `where uvx` (Windows) in your terminal.
+
 ### Claude Code
 First, install [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
 
@@ -52,7 +135,7 @@ path to `uvx`.
 
 ```bash
 # Claude CLI
-claude mcp add massive -e MASSIVE_API_KEY=your_api_key_here -- uvx --from git+https://github.com/massive-com/mcp_massive@v0.6.0 mcp_massive
+claude mcp add massive -e MASSIVE_API_KEY=your_api_key_here -- uvx --from git+https://github.com/ramgeart/mcp_massive mcp_massive
 ```
 
 This command will install the MCP server in your current project.
@@ -83,7 +166,7 @@ Make sure you complete the various fields.
             "command": "<path_to_your_uvx_install>/uvx",
             "args": [
                 "--from",
-                "git+https://github.com/massive-com/mcp_massive@v0.6.0",
+                "git+https://github.com/ramgeart/mcp_massive",
                 "mcp_massive"
             ],
             "env": {
@@ -95,6 +178,53 @@ Make sure you complete the various fields.
 }
 ```
 </details>
+
+### Other MCP Clients
+
+This server is compatible with any MCP client that follows the [Model Context Protocol specification](https://modelcontextprotocol.io/). 
+
+#### Standard Configuration Format
+
+Most MCP clients use a similar configuration format. Here's a generic template you can adapt:
+
+```json
+{
+  "mcpServers": {
+    "massive": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/ramgeart/mcp_massive",
+        "mcp_massive"
+      ],
+      "env": {
+        "MASSIVE_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+#### Running Directly via Command Line
+
+You can also run the server directly from the command line for testing or integration with custom clients:
+
+```bash
+# Using uvx
+MASSIVE_API_KEY=your_api_key_here uvx --from git+https://github.com/ramgeart/mcp_massive mcp_massive
+
+# Or after cloning the repository
+MASSIVE_API_KEY=your_api_key_here uv run mcp_massive
+```
+
+#### Supported Transports
+
+This server supports multiple transport protocols:
+- **STDIO** (default): Standard input/output communication
+- **SSE**: Server-Sent Events over HTTP
+- **Streamable HTTP**: HTTP-based streaming transport
+
+See the [Transport Configuration](#transport-configuration) section below for more details.
 
 ## Transport Configuration
 
